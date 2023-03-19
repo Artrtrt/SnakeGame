@@ -1,4 +1,4 @@
-# snake_game
+# SnakeGame
 
 ## Project setup
 ```
