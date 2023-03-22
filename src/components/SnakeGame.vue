@@ -1,17 +1,18 @@
 <template>
-<div class="game-container">
-  <button v-if="!isGameRunning" @click="startGame">Start Game</button>
-  <button v-if="isGameRunning" @click="stopGame">Stop Game</button>
+  <div class="game-container">
+    <div>Max Score: {{ getMaxScore() }}</div>
+    <button class="game-button" v-if="!isGameRunning" @click="startGame">Start Game</button>
+    <button class="game-button" v-if="isGameRunning" @click="stopGame">Stop Game</button>
     <table>
       <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
         <td v-for="(col, colIndex) in cols" :key="colIndex"
-            :class="{snake: isSnake(rowIndex, colIndex), food: isFood(rowIndex, colIndex)}"></td>
+          :class="{ snake: isSnake(rowIndex, colIndex), food: isFood(rowIndex, colIndex) }"></td>
       </tr>
     </table>
     <div> {{ score }}</div>
   </div>
 </template>
-
+  
 <script>
 import Vue from 'vue';
 export default Vue.extend({
@@ -23,7 +24,7 @@ export default Vue.extend({
 
       snake: [{ x: 0, y: 0 }],
       direction: "right",
-      food: { },
+      food: {},
       gameLoop: null,
       isGameRunning: false,
       score: 0,
@@ -35,8 +36,8 @@ export default Vue.extend({
       this.generateFood();
       this.gameLoop = setInterval(this.moveSnake, 200);
       window.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowUp" || event.key === "ArrowDown" || 
-            event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        if (event.key === "ArrowUp" || event.key === "ArrowDown" ||
+          event.key === "ArrowLeft" || event.key === "ArrowRight") {
           this.changeDirection(event);
         }
       });
@@ -113,6 +114,7 @@ export default Vue.extend({
         };
       } while (this.isSnake(this.food.y, this.food.x));
     },
+
     checkCollision(head) {
       return (
         head.x < 0 ||
@@ -123,19 +125,33 @@ export default Vue.extend({
       );
     },
     stopGame() {
+      this.saveMaxScore();
       this.resetGame();
       this.isGameRunning = false;
+    },
+    getMaxScore() {
+      const maxScore = localStorage.getItem("maxScore");
+      return maxScore ? parseInt(maxScore) : 0;
+    },
+    saveMaxScore() {
+      const maxScore = this.getMaxScore();
+      if (this.score > maxScore) {
+        localStorage.setItem("maxScore", this.score.toString());
+      }
     },
   },
 });
 </script>
-
+  
 <style scoped>
 .game-container {
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.game-button {
+  margin: 20px;
 }
 
 table {
@@ -143,9 +159,9 @@ table {
 }
 
 td {
-  width: 20px;
-  height: 20px;
-  border: 1px solid #ccc;
+  width: 30px;
+  height: 30px;
+  border: 1px solid black;
 }
 
 .snake {
